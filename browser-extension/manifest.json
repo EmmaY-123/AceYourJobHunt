@@ -1,0 +1,11 @@
+{
+  "manifest_version": 3,
+  "name": "JobTrackr Job Capture",
+  "version": "0.1.0",
+  "description": "Copy visible job posting text from the current tab for JobTrackr.",
+  "permissions": ["activeTab", "scripting"],
+  "action": {
+    "default_title": "Copy job info",
+    "default_popup": "popup.html"
+  }
+}

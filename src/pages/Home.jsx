@@ -14,6 +14,25 @@ import ChartsSection from '@/components/ChartsSection';
 import ApplicationFormDialog from '@/components/ApplicationFormDialog';
 import ApplicationDetailDialog from '@/components/ApplicationDetailDialog';
 
+const decodeCapturedJob = () => {
+  const encoded = new URLSearchParams(window.location.hash.slice(1)).get('jobtrackr');
+  if (!encoded) return null;
+
+  try {
+    const bytes = Uint8Array.from(atob(encoded), (char) => char.charCodeAt(0));
+    const job = JSON.parse(new TextDecoder().decode(bytes));
+    return {
+      company_name: job.company || '',
+      job_title: job.title || job.pageTitle || '',
+      description: job.description || '',
+      job_url: job.url || '',
+      status: 'wishlist',
+    };
+  } catch {
+    return null;
+  }
+};
+
 export default function Home() {
   const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -24,6 +43,7 @@ export default function Home() {
   const [detailApp, setDetailApp] = useState(null);
   const [search, setSearch] = useState('');
   const [sortBy, setSortBy] = useState('date_applied_desc');
+  const [initialApp, setInitialApp] = useState(null);
 
   const loadApplications = useCallback(async () => {
     try {
@@ -39,6 +59,17 @@ export default function Home() {
   useEffect(() => {
     loadApplications();
   }, [loadApplications]);
+
+  useEffect(() => {
+    const captured = decodeCapturedJob();
+    if (!captured) return;
+
+    setInitialApp(captured);
+    setEditingApp(null);
+    setDefaultStatus('wishlist');
+    setDialogOpen(true);
+    window.history.replaceState(null, '', window.location.pathname + window.location.search);
+  }, []);
 
   const handleDragEnd = async (result) => {
     const { destination, source, draggableId } = result;
@@ -93,12 +124,14 @@ export default function Home() {
   };
 
   const handleAddToStage = (stage) => {
+    setInitialApp(null);
     setEditingApp(null);
     setDefaultStatus(stage);
     setDialogOpen(true);
   };
 
   const handleAddNew = () => {
+    setInitialApp(null);
     setEditingApp(null);
     setDefaultStatus('wishlist');
     setDialogOpen(true);
@@ -243,11 +276,15 @@ export default function Home() {
 
       <ApplicationFormDialog
         open={dialogOpen}
-        onClose={() => setDialogOpen(false)}
+        onClose={() => {
+          setDialogOpen(false);
+          setInitialApp(null);
+        }}
         onSave={handleSave}
         onArchive={handleArchive}
         application={editingApp}
         defaultStatus={defaultStatus}
+        initialData={initialApp}
       />
 
       <ApplicationDetailDialog

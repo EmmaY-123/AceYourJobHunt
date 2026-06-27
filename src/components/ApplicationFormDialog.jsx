@@ -23,7 +23,7 @@ import ResumeMatchCard from './ResumeMatchCard';
 import { Archive, FileText, Upload, Loader2, X } from 'lucide-react';
 import { backend } from '@/api/backendClient';
 
-export default function ApplicationFormDialog({ open, onClose, onSave, onArchive, application, defaultStatus }) {
+export default function ApplicationFormDialog({ open, onClose, onSave, onArchive, application, defaultStatus, initialData }) {
   const isEdit = !!application;
   const [form, setForm] = useState({
     company_name: '',
@@ -67,21 +67,21 @@ export default function ApplicationFormDialog({ open, onClose, onSave, onArchive
         setUrlFetch({ loading: false, error: null, match: null });
       } else {
         setForm({
-          company_name: '',
-          job_title: '',
-          description: '',
-          job_url: '',
-          status: defaultStatus || 'wishlist',
+          company_name: initialData?.company_name || '',
+          job_title: initialData?.job_title || '',
+          description: initialData?.description || '',
+          job_url: initialData?.job_url || '',
+          status: initialData?.status || defaultStatus || 'wishlist',
           interview_datetime: '',
-          date_applied: new Date().toISOString().slice(0, 10),
+          date_applied: initialData?.date_applied || new Date().toISOString().slice(0, 10),
           resume_url: '',
           resume_name: '',
         });
-        urlRef.current = '';
+        urlRef.current = initialData?.job_url || '';
         setUrlFetch({ loading: false, error: null, match: null });
       }
     }
-  }, [open, application, defaultStatus]);
+  }, [open, application, defaultStatus, initialData]);
 
   const handleChange = (field, value) => {
     setForm((prev) => ({ ...prev, [field]: value }));
