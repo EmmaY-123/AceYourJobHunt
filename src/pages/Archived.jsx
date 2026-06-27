@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { base44 } from '@/api/base44Client';
+import { backend } from '@/api/backendClient';
 import { Archive, RotateCcw, Briefcase } from 'lucide-react';
 import { STAGE_BADGE, STAGE_MAP, formatDate } from '@/components/stages';
 
@@ -9,7 +9,7 @@ export default function Archived() {
 
   const loadApplications = useCallback(async () => {
     try {
-      const data = await base44.entities.Application.list('-updated_date', 200);
+      const data = await backend.entities.Application.list('-updated_date', 200);
       setApplications(data.filter((a) => a.archived));
     } catch (err) {
       console.error('Failed to load archived applications', err);
@@ -23,7 +23,7 @@ export default function Archived() {
   }, [loadApplications]);
 
   const handleRestore = async (app) => {
-    await base44.entities.Application.update(app.id, { archived: false });
+    await backend.entities.Application.update(app.id, { archived: false });
     await loadApplications();
   };
 

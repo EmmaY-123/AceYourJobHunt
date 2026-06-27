@@ -1,5 +1,5 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
-import { base44, supabase } from '@/api/base44Client';
+import { backend, supabase } from '@/api/backendClient';
 
 const AuthContext = createContext();
 
@@ -24,7 +24,7 @@ export const AuthProvider = ({ children }) => {
     try {
       setIsLoadingAuth(true);
       setAuthError(null);
-      const currentUser = await base44.auth.me();
+      const currentUser = await backend.auth.me();
       setUser(currentUser);
       setIsAuthenticated(true);
     } catch (error) {
@@ -45,11 +45,11 @@ export const AuthProvider = ({ children }) => {
   const logout = async () => {
     setUser(null);
     setIsAuthenticated(false);
-    await base44.auth.logout('/login');
+    await backend.auth.logout('/login');
   };
 
   const navigateToLogin = () => {
-    base44.auth.redirectToLogin();
+    backend.auth.redirectToLogin();
   };
 
   return (

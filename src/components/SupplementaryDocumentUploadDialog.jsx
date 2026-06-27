@@ -17,7 +17,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Upload, Loader2, FileText, X } from 'lucide-react';
-import { base44 } from '@/api/base44Client';
+import { backend } from '@/api/backendClient';
 
 const DOC_TYPES = [
   { value: 'cover_letter', label: 'Cover Letter' },
@@ -44,9 +44,9 @@ export default function SupplementaryDocumentUploadDialog({ open, onClose, onSav
     setSaving(true);
     try {
       setUploading(true);
-      const { file_url } = await base44.integrations.Core.UploadFile({ file });
+      const { file_url } = await backend.integrations.Core.UploadFile({ file });
       setUploading(false);
-      await base44.entities.SupplementaryDocument.create({
+      await backend.entities.SupplementaryDocument.create({
         title: form.title.trim(),
         file_url,
         file_name: file.name,

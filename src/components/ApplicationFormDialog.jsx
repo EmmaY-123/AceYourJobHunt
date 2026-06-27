@@ -21,7 +21,7 @@ import { STAGES } from './stages';
 import ActivityTimeline from './ActivityTimeline';
 import ResumeMatchCard from './ResumeMatchCard';
 import { Archive, FileText, Upload, Loader2, X } from 'lucide-react';
-import { base44 } from '@/api/base44Client';
+import { backend } from '@/api/backendClient';
 
 export default function ApplicationFormDialog({ open, onClose, onSave, onArchive, application, defaultStatus }) {
   const isEdit = !!application;
@@ -92,7 +92,7 @@ export default function ApplicationFormDialog({ open, onClose, onSave, onArchive
     if (!file) return;
     setUploading(true);
     try {
-      const { file_url } = await base44.integrations.Core.UploadFile({ file });
+      const { file_url } = await backend.integrations.Core.UploadFile({ file });
       setForm((prev) => ({ ...prev, resume_url: file_url, resume_name: file.name }));
     } catch (err) {
       console.error('Failed to upload resume', err);
@@ -108,7 +108,7 @@ export default function ApplicationFormDialog({ open, onClose, onSave, onArchive
   const handleUrlFetch = async (url) => {
     setUrlFetch({ loading: true, error: null, match: null });
     try {
-      const jobInfo = await base44.integrations.Core.InvokeLLM({
+      const jobInfo = await backend.integrations.Core.InvokeLLM({
         prompt: `Extract the company name, job title, and the full job description from this job posting URL: ${url}. Return the information as JSON.`,
         add_context_from_internet: true,
         model: 'gemini_3_flash',
@@ -143,7 +143,7 @@ export default function ApplicationFormDialog({ open, onClose, onSave, onArchive
 
   const matchResume = async (jobDescription) => {
     try {
-      const resumes = await base44.entities.Resume.list('-created_date', 50);
+      const resumes = await backend.entities.Resume.list('-created_date', 50);
       if (!resumes || resumes.length === 0) {
         setUrlFetch({ loading: false, error: null, match: null });
         return;
@@ -151,7 +151,7 @@ export default function ApplicationFormDialog({ open, onClose, onSave, onArchive
 
       const resumeList = resumes.map((r, i) => `${i + 1}. ${r.title}`).join('\n');
 
-      const result = await base44.integrations.Core.InvokeLLM({
+      const result = await backend.integrations.Core.InvokeLLM({
         prompt: `Given this job description, which resume version is the best match and why?\n\nJob Description:\n${jobDescription}\n\nResume versions available:\n${resumeList}\n\nReturn the best match with a reason and a match score from 0 to 100.`,
         file_urls: resumes.map((r) => r.file_url),
         response_json_schema: {

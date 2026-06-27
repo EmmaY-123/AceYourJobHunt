@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { base44 } from '@/api/base44Client';
+import { backend } from '@/api/backendClient';
 import { Plus, Search, X } from 'lucide-react';
 import {
   Select,
@@ -27,7 +27,7 @@ export default function Home() {
 
   const loadApplications = useCallback(async () => {
     try {
-      const data = await base44.entities.Application.list('-updated_date', 200);
+      const data = await backend.entities.Application.list('-updated_date', 200);
       setApplications(data);
     } catch (err) {
       console.error('Failed to load applications', err);
@@ -58,7 +58,7 @@ export default function Home() {
     );
 
     try {
-      await base44.entities.Application.update(draggableId, { status: newStatus, activity_log: updatedLog });
+      await backend.entities.Application.update(draggableId, { status: newStatus, activity_log: updatedLog });
     } catch (err) {
       // Revert on failure
       setApplications((prev) =>
@@ -81,13 +81,13 @@ export default function Home() {
   };
 
   const handleDelete = async (app) => {
-    await base44.entities.Application.delete(app.id);
+    await backend.entities.Application.delete(app.id);
     setDetailOpen(false);
     await loadApplications();
   };
 
   const handleUpdatePrep = async (app, prepText) => {
-    await base44.entities.Application.update(app.id, { interview_prep: prepText });
+    await backend.entities.Application.update(app.id, { interview_prep: prepText });
     setDetailApp({ ...app, interview_prep: prepText });
     await loadApplications();
   };
@@ -110,16 +110,16 @@ export default function Home() {
         const newEntry = { status: payload.status, from: editingApp.status, entered_at: new Date().toISOString() };
         payload.activity_log = [...(editingApp.activity_log || []), newEntry];
       }
-      await base44.entities.Application.update(editingApp.id, payload);
+      await backend.entities.Application.update(editingApp.id, payload);
     } else {
       payload.activity_log = [{ status: payload.status, from: null, entered_at: new Date().toISOString() }];
-      await base44.entities.Application.create(payload);
+      await backend.entities.Application.create(payload);
     }
     await loadApplications();
   };
 
   const handleArchive = async (app) => {
-    await base44.entities.Application.update(app.id, { archived: true });
+    await backend.entities.Application.update(app.id, { archived: true });
     setDialogOpen(false);
     await loadApplications();
   };

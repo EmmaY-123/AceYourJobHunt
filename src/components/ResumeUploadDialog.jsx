@@ -11,7 +11,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Upload, Loader2, FileText, X } from 'lucide-react';
-import { base44 } from '@/api/base44Client';
+import { backend } from '@/api/backendClient';
 
 export default function ResumeUploadDialog({ open, onClose, onSaved }) {
   const [form, setForm] = useState({ title: '', notes: '' });
@@ -32,9 +32,9 @@ export default function ResumeUploadDialog({ open, onClose, onSaved }) {
     setSaving(true);
     try {
       setUploading(true);
-      const { file_url } = await base44.integrations.Core.UploadFile({ file });
+      const { file_url } = await backend.integrations.Core.UploadFile({ file });
       setUploading(false);
-      await base44.entities.Resume.create({
+      await backend.entities.Resume.create({
         title: form.title.trim(),
         file_url,
         file_name: file.name,

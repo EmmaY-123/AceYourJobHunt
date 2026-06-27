@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { base44 } from '@/api/base44Client';
+import { backend } from '@/api/backendClient';
 import { CalendarClock, ExternalLink, Briefcase, ChevronRight } from 'lucide-react';
 import { STAGE_BADGE, STAGE_MAP, formatDateTime, formatDate } from '@/components/stages';
 
@@ -10,7 +10,7 @@ export default function Interviews() {
   useEffect(() => {
     (async () => {
       try {
-        const data = await base44.entities.Application.list('-updated_date', 200);
+        const data = await backend.entities.Application.list('-updated_date', 200);
         setApplications(data);
       } catch (err) {
         console.error('Failed to load applications', err);

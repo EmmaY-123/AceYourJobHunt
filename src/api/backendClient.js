@@ -18,6 +18,9 @@ const tables = {
 
 const stripReadonly = (payload) => {
   const { id, user_id, created_date, updated_date, ...rest } = payload;
+  if (rest.date_applied === '') rest.date_applied = null;
+  if (rest.interview_datetime === '') rest.interview_datetime = null;
+  if (rest.application_id === '') rest.application_id = null;
   return rest;
 };
 
@@ -91,7 +94,7 @@ const makeEntity = (name) => {
   };
 };
 
-export const base44 = {
+export const backend = {
   auth: {
     async me() {
       const { data, error } = await supabase.auth.getUser();

@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { base44 } from '@/api/base44Client';
+import { backend } from '@/api/backendClient';
 import { Plus, FileText, Paperclip } from 'lucide-react';
 import {
   AlertDialog,
@@ -29,9 +29,9 @@ export default function ResumeLibrary() {
   const loadData = useCallback(async () => {
     try {
       const [resumeData, appData, suppData] = await Promise.all([
-        base44.entities.Resume.list('-created_date', 200),
-        base44.entities.Application.list('-updated_date', 200),
-        base44.entities.SupplementaryDocument.list('-created_date', 200),
+        backend.entities.Resume.list('-created_date', 200),
+        backend.entities.Application.list('-updated_date', 200),
+        backend.entities.SupplementaryDocument.list('-created_date', 200),
       ]);
       setResumes(resumeData);
       setApplications(appData);
@@ -49,14 +49,14 @@ export default function ResumeLibrary() {
 
   const handleDelete = async () => {
     if (!deleteTarget) return;
-    await base44.entities.Resume.delete(deleteTarget.id);
+    await backend.entities.Resume.delete(deleteTarget.id);
     setDeleteTarget(null);
     await loadData();
   };
 
   const handleSuppDelete = async () => {
     if (!suppDeleteTarget) return;
-    await base44.entities.SupplementaryDocument.delete(suppDeleteTarget.id);
+    await backend.entities.SupplementaryDocument.delete(suppDeleteTarget.id);
     setSuppDeleteTarget(null);
     await loadData();
   };
