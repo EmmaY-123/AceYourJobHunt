@@ -16,6 +16,22 @@
         font-size: 16px;
       }
 
+      .title {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 8px;
+      }
+
+      .title img {
+        width: 24px;
+        height: 24px;
+      }
+
+      .title h1 {
+        margin: 0;
+      }
+
       p {
         margin: 0 0 12px;
         color: #6b7280;
@@ -66,7 +82,10 @@
     </style>
   </head>
   <body>
-    <h1>Save to AceJob</h1>
+    <div class="title">
+      <img src="icons/icon48.png" alt="" />
+      <h1>Save to AceJob</h1>
+    </div>
     <p>Save this job page to your AceJob wishlist.</p>
     <div id="status"></div>
     <button id="connect">Connect AceJob</button>

@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/lib/AuthContext';
-import { Briefcase, KanbanSquare, CalendarDays, FileText, ArrowRight } from 'lucide-react';
+import { KanbanSquare, CalendarDays, FileText, ArrowRight } from 'lucide-react';
+import AceJobLogo from '@/components/AceJobLogo';
 
 export default function Landing() {
   const { isAuthenticated } = useAuth();
@@ -10,8 +11,8 @@ export default function Landing() {
       {/* Nav */}
       <header className="flex items-center justify-between px-6 py-5 border-b border-border">
         <div className="flex items-center gap-2.5">
-          <div className="flex items-center justify-center w-9 h-9 rounded-lg bg-primary/15">
-            <Briefcase className="w-5 h-5 text-primary" strokeWidth={2.5} />
+          <div className="flex items-center justify-center w-9 h-9 rounded-lg bg-card text-foreground shadow-sm">
+            <AceJobLogo className="w-7 h-7" />
           </div>
           <span className="text-lg font-bold tracking-tight">AceJob</span>
         </div>
@@ -37,8 +38,8 @@ export default function Landing() {
       {/* Hero */}
       <main className="flex-1 flex flex-col items-center justify-center px-6 py-16 text-center">
         <div className="max-w-2xl">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary/15 mb-6">
-            <Briefcase className="w-8 h-8 text-primary" strokeWidth={2.5} />
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-card text-foreground shadow-sm mb-6">
+            <AceJobLogo className="w-12 h-12" />
           </div>
           <h1 className="text-4xl sm:text-5xl font-bold tracking-tight mb-4">
             Hunt with clarity.<br />Land the offer.
