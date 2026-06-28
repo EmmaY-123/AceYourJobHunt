@@ -13,6 +13,7 @@ import StatsBar from '@/components/StatsBar';
 import ChartsSection from '@/components/ChartsSection';
 import ApplicationFormDialog from '@/components/ApplicationFormDialog';
 import ApplicationDetailDialog from '@/components/ApplicationDetailDialog';
+import ExtensionInstallBanner from '@/components/ExtensionInstallBanner';
 
 const decodeCapturedJob = () => {
   const encoded = new URLSearchParams(window.location.hash.slice(1)).get('jobtrackr');
@@ -252,6 +253,8 @@ export default function Home() {
           </button>
         </div>
       </div>
+
+      <ExtensionInstallBanner />
 
       {/* Stats */}
       <StatsBar applications={applications} />

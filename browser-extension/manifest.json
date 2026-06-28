@@ -10,6 +10,13 @@
     "128": "icons/icon128.png"
   },
   "permissions": ["activeTab", "identity", "scripting", "storage"],
+  "content_scripts": [
+    {
+      "matches": ["https://aceyourjobhunt.tech/*", "http://localhost:5173/*"],
+      "js": ["detect-installed.js"],
+      "run_at": "document_start"
+    }
+  ],
   "action": {
     "default_title": "Save to AceJob",
     "default_popup": "popup.html",
