@@ -13,7 +13,7 @@ export default function Landing() {
           <div className="flex items-center justify-center w-9 h-9 rounded-lg bg-primary/15">
             <Briefcase className="w-5 h-5 text-primary" strokeWidth={2.5} />
           </div>
-          <span className="text-lg font-bold tracking-tight">JobTrackr</span>
+          <span className="text-lg font-bold tracking-tight">AceJob</span>
         </div>
         {isAuthenticated ? (
           <Link
@@ -91,7 +91,7 @@ export default function Landing() {
       </main>
 
       <footer className="px-6 py-6 text-center text-xs text-muted-foreground/70 border-t border-border">
-        JobTrackr — Stay organized. Land the offer.
+        AceJob — Stay organized. Land the offer.
       </footer>
     </div>
   );

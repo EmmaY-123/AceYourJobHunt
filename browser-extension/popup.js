@@ -84,7 +84,7 @@ document.getElementById("autofill").addEventListener("click", async () => {
     const job = await getCurrentJob();
     const url = `https://aceyourjobhunt.tech/dashboard#jobtrackr=${encodeURIComponent(encodeJob(job))}`;
     await chrome.tabs.create({ url });
-    setStatus("Opening JobTrackr...");
+    setStatus("Opening AceJob...");
   } catch (error) {
     setStatus(error?.message || "Could not read this page.");
   }
@@ -95,7 +95,7 @@ document.getElementById("copy").addEventListener("click", async () => {
     const job = await getCurrentJob();
     const text = formatJobInfo(job);
     await navigator.clipboard.writeText(text);
-    setStatus("Copied. Paste it into JobTrackr.");
+    setStatus("Copied. Paste it into AceJob.");
   } catch (error) {
     setStatus(error?.message || "Could not read this page.");
   }

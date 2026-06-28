@@ -1,4 +1,4 @@
-# JobTrackr
+# AceJob
 
 Job hunt tracker built with React, Vite, Supabase Auth, Supabase Postgres, and Supabase Storage.
 

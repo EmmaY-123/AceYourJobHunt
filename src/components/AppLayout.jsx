@@ -14,7 +14,7 @@ export default function AppLayout() {
             <Briefcase className="w-4.5 h-4.5 text-primary" strokeWidth={2.5} />
           </div>
           <div>
-            <h1 className="text-[15px] font-bold tracking-tight text-foreground leading-none">JobTrackr</h1>
+            <h1 className="text-[15px] font-bold tracking-tight text-foreground leading-none">AceJob</h1>
             <p className="text-[11px] text-muted-foreground mt-0.5">Hunt with clarity</p>
           </div>
         </div>
@@ -109,7 +109,7 @@ export default function AppLayout() {
           <div className="flex items-center justify-center w-7 h-7 rounded-lg bg-primary/15">
             <Briefcase className="w-4 h-4 text-primary" strokeWidth={2.5} />
           </div>
-          <h1 className="text-sm font-bold tracking-tight">JobTrackr</h1>
+          <h1 className="text-sm font-bold tracking-tight">AceJob</h1>
         </div>
         <nav className="flex items-center gap-1">
           <NavLink to="/dashboard" end className={({ isActive }) => `flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${isActive ? 'bg-primary/12 text-primary' : 'text-muted-foreground'}`}>

@@ -30,7 +30,7 @@ const fetchJobPage = async (prompt: string) => {
   try {
     const response = await fetch(url, {
       headers: {
-        "User-Agent": "Mozilla/5.0 JobTrackr/1.0",
+        "User-Agent": "Mozilla/5.0 AceJob/1.0",
         "Accept": "text/html,application/xhtml+xml",
       },
     });

@@ -23,10 +23,11 @@ const decodeCapturedJob = () => {
     const job = JSON.parse(new TextDecoder().decode(bytes));
     return {
       company_name: job.company || '',
-      job_title: job.title || job.pageTitle || '',
-      description: job.description || '',
+      job_title: job.title || '',
+      description: job.company || job.title ? job.description || '' : '',
       job_url: job.url || '',
       status: 'wishlist',
+      raw_capture: job,
     };
   } catch {
     return null;

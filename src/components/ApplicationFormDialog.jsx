@@ -40,6 +40,7 @@ export default function ApplicationFormDialog({ open, onClose, onSave, onArchive
   const [uploading, setUploading] = useState(false);
   const [urlFetch, setUrlFetch] = useState({ loading: false, error: null, match: null });
   const urlRef = useRef('');
+  const captureRef = useRef('');
 
   useEffect(() => {
     if (open) {
@@ -105,6 +106,62 @@ export default function ApplicationFormDialog({ open, onClose, onSave, onArchive
     setForm((prev) => ({ ...prev, resume_url: '', resume_name: '' }));
   };
 
+  const applyJobInfo = async (jobInfo, { overwrite = false } = {}) => {
+    setForm((prev) => ({
+      ...prev,
+      company_name: overwrite ? jobInfo.company_name || prev.company_name : prev.company_name.trim() || jobInfo.company_name || '',
+      job_title: overwrite ? jobInfo.job_title || prev.job_title : prev.job_title.trim() || jobInfo.job_title || '',
+      description: overwrite ? jobInfo.description || prev.description : prev.description.trim() || jobInfo.description || '',
+    }));
+
+    if (jobInfo.description) {
+      await matchResume(jobInfo.description);
+    } else {
+      setUrlFetch({ loading: false, error: null, match: null });
+    }
+  };
+
+  const handleCapturedJob = async (capture) => {
+    setUrlFetch({ loading: true, error: null, match: null });
+    try {
+      const jobInfo = await backend.integrations.Core.InvokeLLM({
+        prompt: `Clean this captured browser text from a job posting page.
+
+URL: ${capture.url || ''}
+Page title: ${capture.pageTitle || ''}
+Possible company from structured data: ${capture.company || ''}
+Possible job title from structured data: ${capture.title || ''}
+
+Raw captured text:
+${capture.description || ''}
+
+Return JSON with:
+- company_name: the real employer or hiring brand, not the page vendor
+- job_title: the specific active job title from the current URL/page, not a generic page title
+- description: a readable, sectioned job description in the source language
+
+Rules:
+- Do not dump navigation, breadcrumbs, buttons, duplicate text, or unrelated job cards.
+- If the page contains multiple directions under one posting, keep them under clear headings.
+- Use line breaks and labels like 职位描述, 招聘方向, 工作职责, 任职要求, 工作地点 when present.
+- If the URL/page title says DeepSeek招聘 and the posting content says DeepSeek, company_name should be DeepSeek.`,
+        response_json_schema: {
+          type: 'object',
+          properties: {
+            company_name: { type: 'string' },
+            job_title: { type: 'string' },
+            description: { type: 'string' },
+          },
+        },
+      });
+
+      await applyJobInfo(jobInfo, { overwrite: true });
+    } catch (err) {
+      console.error('Failed to clean captured job info', err);
+      setUrlFetch({ loading: false, error: 'Could not clean captured job info', match: null });
+    }
+  };
+
   const handleUrlFetch = async (url) => {
     setUrlFetch({ loading: true, error: null, match: null });
     try {
@@ -122,19 +179,7 @@ export default function ApplicationFormDialog({ open, onClose, onSave, onArchive
         },
       });
 
-      setForm((prev) => ({
-        ...prev,
-        company_name: prev.company_name.trim() || jobInfo.company_name || '',
-        job_title: prev.job_title.trim() || jobInfo.job_title || '',
-        description: prev.description.trim() || jobInfo.description || '',
-      }));
-
-      const jobDescription = jobInfo.description || '';
-      if (jobDescription) {
-        await matchResume(jobDescription);
-      } else {
-        setUrlFetch({ loading: false, error: null, match: null });
-      }
+      await applyJobInfo(jobInfo);
     } catch (err) {
       console.error('Failed to fetch job info', err);
       setUrlFetch({ loading: false, error: 'Could not fetch job info from this URL', match: null });
@@ -196,6 +241,16 @@ export default function ApplicationFormDialog({ open, onClose, onSave, onArchive
     return () => clearTimeout(timeout);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [form.job_url]);
+
+  useEffect(() => {
+    if (!open || !initialData?.raw_capture) return;
+
+    const key = `${initialData.raw_capture.url || ''}:${initialData.raw_capture.description || ''}`.slice(0, 500);
+    if (key === captureRef.current) return;
+    captureRef.current = key;
+    handleCapturedJob(initialData.raw_capture);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, initialData]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
