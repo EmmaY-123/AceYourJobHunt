@@ -3,7 +3,7 @@
   "name": "Save to AceJob",
   "version": "0.1.0",
   "description": "Save visible job posting text from the current tab to AceJob.",
-  "permissions": ["activeTab", "scripting"],
+  "permissions": ["activeTab", "identity", "scripting", "storage"],
   "action": {
     "default_title": "Save to AceJob",
     "default_popup": "popup.html"

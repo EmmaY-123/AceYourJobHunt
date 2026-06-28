@@ -1,6 +1,6 @@
 # Save to AceJob
 
-Tiny Chrome extension for protected job boards. It captures the current page text and opens a prefilled AceJob application.
+Tiny Chrome extension for protected job boards. It captures the current page text and saves a cleaned application to AceJob.
 
 ## Install locally
 
@@ -9,6 +9,8 @@ Tiny Chrome extension for protected job boards. It captures the current page tex
 3. Click **Load unpacked**
 4. Select this `browser-extension` folder
 
-On a job page, click the extension and choose **Autofill in AceJob**.
+On first use, click **Connect AceJob**. On a job page, click **Save to AceJob**.
+
+After saving, use **Move to Applied** if you already applied.
 
 Use **Copy job text** as a fallback.
