@@ -13,6 +13,8 @@ import { STAGE_MAP, STAGE_BADGE, formatDate, formatDateTime } from '@/components
 import ApplicationDetailDialog from '@/components/ApplicationDetailDialog';
 import ApplicationFormDialog from '@/components/ApplicationFormDialog';
 
+const DETAIL_ID_KEY = 'acejob_open_application_id';
+
 export default function Applications() {
   const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -40,9 +42,25 @@ export default function Applications() {
     loadApplications();
   }, [loadApplications]);
 
-  const handleRowClick = (app) => {
+  useEffect(() => {
+    if (loading || detailOpen || dialogOpen) return;
+    const id = sessionStorage.getItem(DETAIL_ID_KEY);
+    if (!id) return;
+    const app = applications.find((a) => a.id === id);
+    if (!app) return;
     setDetailApp(app);
     setDetailOpen(true);
+  }, [applications, loading, detailOpen, dialogOpen]);
+
+  const handleRowClick = (app) => {
+    sessionStorage.setItem(DETAIL_ID_KEY, app.id);
+    setDetailApp(app);
+    setDetailOpen(true);
+  };
+
+  const handleDetailClose = () => {
+    sessionStorage.removeItem(DETAIL_ID_KEY);
+    setDetailOpen(false);
   };
 
   const handleEditFromDetail = (app) => {
@@ -54,6 +72,7 @@ export default function Applications() {
 
   const handleDelete = async (app) => {
     await backend.entities.Application.delete(app.id);
+    sessionStorage.removeItem(DETAIL_ID_KEY);
     setDetailOpen(false);
     await loadApplications();
   };
@@ -257,7 +276,7 @@ export default function Applications() {
 
       <ApplicationDetailDialog
         open={detailOpen}
-        onClose={() => setDetailOpen(false)}
+        onClose={handleDetailClose}
         onEdit={handleEditFromDetail}
         onDelete={handleDelete}
         onUpdate={handleUpdatePrep}

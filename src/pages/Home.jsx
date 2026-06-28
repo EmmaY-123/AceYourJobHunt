@@ -34,6 +34,8 @@ const decodeCapturedJob = () => {
   }
 };
 
+const DETAIL_ID_KEY = 'acejob_open_application_id';
+
 export default function Home() {
   const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -60,6 +62,16 @@ export default function Home() {
   useEffect(() => {
     loadApplications();
   }, [loadApplications]);
+
+  useEffect(() => {
+    if (loading || detailOpen || dialogOpen) return;
+    const id = sessionStorage.getItem(DETAIL_ID_KEY);
+    if (!id) return;
+    const app = applications.find((a) => a.id === id && !a.archived);
+    if (!app) return;
+    setDetailApp(app);
+    setDetailOpen(true);
+  }, [applications, loading, detailOpen, dialogOpen]);
 
   useEffect(() => {
     const captured = decodeCapturedJob();
@@ -101,8 +113,14 @@ export default function Home() {
   };
 
   const handleCardClick = (app) => {
+    sessionStorage.setItem(DETAIL_ID_KEY, app.id);
     setDetailApp(app);
     setDetailOpen(true);
+  };
+
+  const handleDetailClose = () => {
+    sessionStorage.removeItem(DETAIL_ID_KEY);
+    setDetailOpen(false);
   };
 
   const handleEditFromDetail = (app) => {
@@ -114,6 +132,7 @@ export default function Home() {
 
   const handleDelete = async (app) => {
     await backend.entities.Application.delete(app.id);
+    sessionStorage.removeItem(DETAIL_ID_KEY);
     setDetailOpen(false);
     await loadApplications();
   };
@@ -290,7 +309,7 @@ export default function Home() {
 
       <ApplicationDetailDialog
         open={detailOpen}
-        onClose={() => setDetailOpen(false)}
+        onClose={handleDetailClose}
         onEdit={handleEditFromDetail}
         onDelete={handleDelete}
         onUpdate={handleUpdatePrep}

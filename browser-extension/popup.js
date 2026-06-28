@@ -5,11 +5,23 @@ const statusEl = document.getElementById("status");
 const connectBtn = document.getElementById("connect");
 const saveBtn = document.getElementById("save");
 const appliedBtn = document.getElementById("applied");
+const fallbackEl = document.getElementById("fallback");
 
 let savedApplication = null;
 
 const setStatus = (message) => {
   statusEl.textContent = message;
+};
+
+const showFallback = (visible) => {
+  fallbackEl.hidden = !visible;
+};
+
+const renderState = ({ token = false, saved = false, moved = false, error = false } = {}) => {
+  connectBtn.hidden = token;
+  saveBtn.hidden = !token || saved || moved;
+  appliedBtn.hidden = !saved || moved;
+  showFallback(error);
 };
 
 const getStored = (keys) => chrome.storage.local.get(keys);
@@ -125,9 +137,8 @@ const getAccessToken = async () => {
 
 const renderAuthState = async () => {
   const token = await getAccessToken().catch(() => null);
-  connectBtn.hidden = Boolean(token);
-  saveBtn.hidden = !token;
-  if (!token) setStatus("Connect AceJob once to save jobs.");
+  renderState({ token: Boolean(token), saved: Boolean(savedApplication) });
+  setStatus(token ? "" : "Connect AceJob once to save jobs.");
 };
 
 connectBtn.addEventListener("click", async () => {
@@ -143,12 +154,14 @@ connectBtn.addEventListener("click", async () => {
     await renderAuthState();
     setStatus("Connected. Ready to save.");
   } catch (error) {
+    renderState({ error: true });
     setStatus(`Connect failed. Add redirect URL in Supabase: ${redirectTo}`);
   }
 });
 
 saveBtn.addEventListener("click", async () => {
   setStatus("Saving to AceJob...");
+  showFallback(false);
   saveBtn.disabled = true;
   appliedBtn.hidden = true;
 
@@ -170,9 +183,10 @@ saveBtn.addEventListener("click", async () => {
     if (!response.ok || result.error) throw new Error(result.error || "Save failed.");
 
     savedApplication = result.application;
+    renderState({ token: true, saved: true });
     setStatus("Saved to Wishlist.");
-    appliedBtn.hidden = false;
   } catch (error) {
+    renderState({ token: true, error: true });
     setStatus(error?.message || "Save failed.");
   } finally {
     saveBtn.disabled = false;
@@ -206,8 +220,10 @@ appliedBtn.addEventListener("click", async () => {
     if (!response.ok) throw new Error("Could not move application.");
 
     savedApplication = updated;
+    renderState({ token: true, moved: true });
     setStatus("Moved to Applied.");
   } catch (error) {
+    renderState({ token: true, saved: true, error: true });
     setStatus(error?.message || "Could not move application.");
   } finally {
     appliedBtn.disabled = false;
